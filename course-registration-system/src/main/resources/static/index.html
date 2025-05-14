@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login Page</title>
+    <!-- Link to Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f8f9fa; /* Light gray background */
+        }
+        .card {
+            border-radius: 12px; /* Smooth edges */
+        }
+    </style>
+</head>
+<body>
+    <!-- Container to center content -->
+    <div class="container vh-100 d-flex justify-content-center align-items-center">
+        <div class="card shadow-lg p-4" style="width: 28rem;">
+            <div class="card-body">
+                <h2 class="card-title text-center mb-4">Welcome!</h2>
+                <p class="text-muted text-center mb-4">Sign in or Sign up to continue</p>
+
+                <!-- Admin Sign In Button -->
+                <button type="button" class="btn btn-primary w-100 mb-3" onclick="redirectToAdminSignIn()">
+                    Admin Sign In
+                </button>
+
+                <!-- Student Sign In Button -->
+                <button type="button" class="btn btn-success w-100 mb-3" onclick="redirectToStudentSignIn()">
+                    Student Sign In
+                </button>
+
+                <!-- Student Sign Up Button -->
+                <button type="button" class="btn btn-secondary w-100" onclick="redirectToStudentSignUp()">
+                    Student Sign Up
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript to handle button clicks -->
+    <script>
+        function redirectToAdminSignIn() {
+            window.location.href = '/admin-signin.html'; // Redirect to Admin Sign In page
+        }
+
+        function redirectToStudentSignIn() {
+            window.location.href = '/student-signin.html'; // Redirect to Student Sign In page
+        }
+
+        function redirectToStudentSignUp() {
+            window.location.href = '/student-signup.html'; // Redirect to Student Sign Up page
+        }
+    </script>
+    <!-- Bootstrap JS Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

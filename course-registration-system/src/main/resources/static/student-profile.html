@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Profile Management</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container mt-5">
+        <h1 class="text-center mb-4">Student Profile Management</h1>
+        <p class="text-center text-muted mb-5">Manage your courses and search for new ones.</p>
+
+        <!-- Add Course Section -->
+        <div class="mb-5">
+            <h3>Add Course</h3>
+            <form id="addCourseForm" class="row gy-3">
+                <input type="hidden" id="studentId" value="1" /> <!-- Replace with dynamic student ID -->
+                <div class="col-md-6">
+                    <label for="courseId" class="form-label">Course ID</label>
+                    <input type="number" id="courseId" class="form-control" placeholder="Enter Course ID" required />
+                </div>
+                <div class="col-md-6 d-flex align-items-end">
+                    <button type="submit" class="btn btn-primary w-100">Add Course</button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Delete Course Section -->
+        <div class="mb-5">
+            <h3>Delete Course</h3>
+            <form id="deleteCourseForm" class="row gy-3">
+                <input type="hidden" id="studentIdDelete" value="1" /> <!-- Replace with dynamic student ID -->
+                <div class="col-md-6">
+                    <label for="deleteCourseId" class="form-label">Course ID</label>
+                    <input type="number" id="deleteCourseId" class="form-control" placeholder="Enter Course ID" required />
+                </div>
+                <div class="col-md-6 d-flex align-items-end">
+                    <button type="submit" class="btn btn-danger w-100">Delete Course</button>
+                </div>
+            </form>
+        </div>
+
+        <!-- View Registered Courses Section -->
+        <div class="mb-5">
+            <h3>View Registered Courses</h3>
+            <button id="viewCoursesBtn" class="btn btn-success">View Courses</button>
+            <ul id="registeredCourses" class="list-group mt-3"></ul>
+        </div>
+
+        <!-- Search Courses Section -->
+        <div class="mb-5">
+            <h3>Search Courses</h3>
+            <form id="searchCourseForm" class="row gy-3">
+                <div class="col-md-9">
+                    <label for="keyword" class="form-label">Keyword</label>
+                    <input type="text" id="keyword" class="form-control" placeholder="Enter keyword to search" required />
+                </div>
+                <div class="col-md-3 d-flex align-items-end">
+                    <button type="submit" class="btn btn-info w-100">Search</button>
+                </div>
+            </form>
+            <ul id="searchResults" class="list-group mt-3"></ul>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Custom JavaScript -->
+    <script>
+        // Add Course API Call
+        document.getElementById('addCourseForm').addEventListener('submit', async function(event) {
+            event.preventDefault();
+            const studentId = document.getElementById('studentId').value;
+            const courseId = document.getElementById('courseId').value;
+
+            try {
+                const response = await fetch(`/api/students/${studentId}/add-course?courseId=${courseId}`, {
+                    method: 'POST'
+                });
+                const message = await response.text();
+                alert(message);
+            } catch (error) {
+                alert('Error adding course.');
+                console.error(error);
+            }
+        });
+
+        // Delete Course API Call
+        document.getElementById('deleteCourseForm').addEventListener('submit', async function(event) {
+            event.preventDefault();
+            const studentId = document.getElementById('studentIdDelete').value;
+            const courseId = document.getElementById('deleteCourseId').value;
+
+            try {
+                const response = await fetch(`/api/students/${studentId}/delete-course?courseId=${courseId}`, {
+                    method: 'DELETE'
+                });
+                const message = await response.text();
+                alert(message);
+            } catch (error) {
+                alert('Error deleting course.');
+                console.error(error);
+            }
+        });
+
+        // View Registered Courses API Call
+        document.getElementById('viewCoursesBtn').addEventListener('click', async function() {
+            const studentId = document.getElementById('studentId').value;
+
+            try {
+                const response = await fetch(`/api/students/${studentId}/registered-courses`);
+                const courses = await response.json();
+                const courseList = document.getElementById('registeredCourses');
+                courseList.innerHTML = ''; // Clear previous results
+                courses.forEach(course => {
+                    const li = document.createElement('li');
+                    li.textContent = `${course.title} - ${course.description} (${course.credits} credits)`;
+                    li.classList.add('list-group-item');
+                    courseList.appendChild(li);
+                });
+            } catch (error) {
+                alert('Error fetching registered courses.');
+                console.error(error);
+            }
+        });
+
+        // Search Courses API Call
+       /*  document.getElementById('searchCourseForm').addEventListener('submit', async function(event) {
+            event.preventDefault();
+            const keyword = document.getElementById('keyword').value;
+
+            try {
+                const response = await fetch(`/api/students/search-course?keyword=${keyword}`);
+                const courses = await response.json();
+                const resultList = document.getElementById('searchResults');
+                resultList.innerHTML = ''; // Clear previous results
+                courses.forEach(course => {
+                    const li = document.createElement('li');
+                    li.textContent = `${course.title} - ${course.description} (${course.credits} credits)`;
+                    li.classList.add('list-group-item');
+                    resultList.appendChild(li);
+                });
+            } catch (error) {
+                alert('Error searching courses.');
+                console.error(error);
+            }
+        }); */
+        
+        
+        document.getElementById('searchCourseForm').addEventListener('submit', async function(event) {
+            event.preventDefault(); // Prevent form refresh
+            const keyword = document.getElementById('keyword').value.trim(); // Get the search keyword
+
+            try {
+                // Send GET request to the backend search endpoint
+                const response = await fetch(`/api/students/search-course?keyword=${keyword}`);
+                if (!response.ok) {
+                    throw new Error('Failed to fetch search results'); // Handle non-OK response
+                }
+
+                // Parse JSON response
+                const courses = await response.json();
+
+                // Get the search results list element
+                const resultList = document.getElementById('searchResults');
+                resultList.innerHTML = ''; // Clear previous results
+
+                // Add each course to the list
+                courses.forEach(course => {
+                    const li = document.createElement('li');
+                    li.textContent = `ID: ${course.id}, Title: ${course.title}, Description: ${course.description}, Credits: ${course.credits}`;
+                    li.classList.add('list-group-item'); // Apply Bootstrap styling
+                    resultList.appendChild(li);
+                });
+            } catch (error) {
+                console.error('Error fetching search results:', error); // Log errors in the console
+                alert('Error fetching search results. Please try again later.'); // Alert the user about the error
+            }
+        });
+        
+        
+        
+    </script>
+</body>
+</html>
